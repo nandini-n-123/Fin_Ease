@@ -1,0 +1,252 @@
+1. Intent: SaveIn20s
+💡 Topic: Saving advice for people in their 20s
+🗨 Training Phrases:
+
+Why should I start saving in my 20s?
+
+Is it important to save when I’m young?
+
+ನಾನು 20ರ ಹರೆಯದಲ್ಲಿದ್ದೇನೆ, ಉಳಿತಾಯ ಏಕೆ ಮುಖ್ಯ?
+
+ನಾನು ಈಗಲೇ ಉಳಿತಾಯ ಪ್ರಾರಂಭಿಸಬೇಕೆ?
+
+💬 Bot Response:
+Saving in your 20s builds long-term wealth and helps achieve future goals. Even small amounts grow over time due to compounding.
+
+ 
+
+2. Intent: SaveIn40s
+💡 Topic: Mid-life financial planning
+🗨 Training Phrases:
+
+Is 40 too late to save?
+
+What are saving strategies for 40s?
+
+ನಾನು 40ರ ವಯಸ್ಸಿನಲ್ಲಿ ಹೇಗೆ ಉಳಿತಾಯ ಪ್ರಾರಂಭಿಸಬಹುದು?
+
+ಈಗ ಉಳಿತಾಯ ಪ್ರಾರಂಭಿಸಲು ತಡವಾಯಿತೇ?
+
+💬 Bot Response:
+It's never too late. You can start saving even in your 40s to support retirement and family needs.
+
+ 
+
+3. Intent: SaveIn60s
+💡 Topic: Retirement and savings for elderly
+🗨 Training Phrases:
+
+Can I still open a savings account at 60?
+
+Is it safe for elders to keep money in banks?
+
+ನಾನು 60 ವರ್ಷ ವಯಸ್ಸಿನವನು, ನಾನು ಖಾತೆ ತೆಗೆಯಬಹುದಾ?
+
+ಬ್ಯಾಂಕ್ ಖಾತೆ ತ್ಯಾಜ್ಯವಲ್ಲವೇ?
+
+💬 Bot Response:
+Yes. You can open a senior citizen account with extra interest benefits. Bank deposits are insured by RBI up to ₹5 lakhs.
+
+ 
+
+4. Intent: OpenBankAccount
+💡 Topic: Account opening & KYC
+🗨 Training Phrases:
+
+How do I open a bank account?
+
+Can I open a zero balance account?
+
+KYC ಏನು?
+
+ನಗದು ಇಲ್ಲದೆ ನಾನು ಖಾತೆ ತೆರೆಯಬಹುದಾ?
+
+💬 Bot Response:
+You can open a Jan Dhan account with Aadhaar and PAN. KYC helps banks verify identity and prevent fraud.
+
+ 
+
+5. Intent: Budgeting
+💡 Topic: Planning income and expenses
+🗨 Training Phrases:
+
+What is a budget?
+
+How do I plan my monthly spending?
+
+ಬಜೆಟ್ ಏನು? ಅದನ್ನು ಹೇಗೆ ರೂಪಿಸಬೇಕು?
+
+ನಾನು ಕಡಿಮೆ ಆದಾಯದಿಂದ ಬಜೆಟ್ ಮಾಡಬಹುದೇ?
+
+💬 Bot Response:
+A budget is a money plan. Track income, note expenses, avoid unnecessary spending, and prioritize essentials.
+
+ 
+
+6. Intent: DebtManagement
+💡 Topic: Handling loans and credit
+🗨 Training Phrases:
+
+How can I reduce my loan burden?
+
+EMI ಹೆಚ್ಚಾಗುತ್ತಿದೆ, ನಾನು ಏನು ಮಾಡಬೇಕು?
+
+How to manage multiple loans?
+
+ಸಾಲ ಹೇಗೆ ಹಿಂತೆಗೆದುಕೊಳ್ಳುವುದು?
+
+💬 Bot Response:
+Pay EMIs on time, consolidate loans if needed, and avoid taking on new debt before repaying current ones.
+
+ 
+
+7. Intent: HealthInsurance
+💡 Topic: Medical insurance basics
+🗨 Training Phrases:
+
+What is health insurance?
+
+ಹೇಗೆ ಆರೋಗ್ಯ ವಿಮೆ ಪಡೆಯುವುದು?
+
+Government health insurance ಏನು?
+
+Ayushman Bharat ಎಂದರೇನು?
+
+💬 Bot Response:
+Health insurance helps cover hospital bills. Ayushman Bharat is a govt scheme for families with low income.
+
+ 
+
+8. Intent: LifeInsurance
+💡 Topic: Life coverage & security
+🗨 Training Phrases:
+
+Is LIC a good option?
+
+What is term life insurance?
+
+ಜೀವನ ವಿಮೆ ಏಕೆ ಬೇಕು?
+
+LIC ಬಗ್ಗೆ ಮಾಹಿತಿ ಕೊಡಿ.
+
+💬 Bot Response:
+Life insurance provides financial support to your family after your death. LIC is a trusted government-backed insurer.
+
+ 
+
+9. Intent: StudentFinance
+💡 Topic: Financial advice for students
+🗨 Training Phrases:
+
+How can students save money?
+
+ವಿದ್ಯಾರ್ಥಿಗಳಿಗೆ ಯಾವ ಯೋಜನೆಗಳು ಲಭ್ಯವಿದೆ?
+
+I want to start saving as a student.
+
+Is there a savings plan for students?
+
+💬 Bot Response:
+Students can save using recurring deposit accounts and government schemes like Sukanya Samriddhi Yojana (for girl children).
+
+ 
+
+10. Intent: WomenFinance
+💡 Topic: Women-specific financial options
+🗨 Training Phrases:
+
+What are good savings schemes for women?
+
+ಮಹಿಳೆಯರು ಯಾವ ಯೋಜನೆಗಳನ್ನು ಬಳಸಬಹುದು?
+
+Can women get loans easily?
+
+Women investment plans in India?
+
+💬 Bot Response:
+Women can access schemes like Mahila Samman Saving Scheme, Mudra Loan, and Sukanya Yojana for daughters.
+
+ 
+
+11. Intent: GeneralInsurance
+💡 Topic: Insurance awareness
+🗨 Training Phrases:
+
+What is general insurance?
+
+ವಿಮೆ ಎಲ್ಲರಿಗೂ ಬೇಕೆ?
+
+ಸೈಕಲ್ ಅಥವಾ ಮೊಬೈಲ್ ಗೆ ವಿಮೆ ಸಿಗುತ್ತದೆಯೆ?
+
+Can I insure my scooter?
+
+💬 Bot Response:
+Yes. General insurance covers vehicles, homes, and more. Premiums depend on asset value and risk.
+
+ 
+
+12. Intent: SmartSavingTips
+💡 Topic: Easy saving ideas
+🗨 Training Phrases:
+
+How can I save money at home?
+
+What are 5 ways to save daily?
+
+ನಾನು ಪ್ರತಿ ದಿನ ಹಣ ಉಳಿಸಬಹುದೆ?
+
+ಹಚ್ಚಳಿಕೆ ಹೇಗೆ ಮಾಡುವುದು?
+
+💬 Bot Response:
+Set a small daily saving goal, track your spending, avoid impulse buying, use a piggy bank, and review monthly.
+
+ 
+
+13. Intent: FarmerSchemes
+💡 Topic: Agricultural finance
+🗨 Training Phrases:
+
+What schemes are there for farmers?
+
+ರೈತರಿಗಾಗಿ ಸರ್ಕಾರದಿಂದ ಏನು ಯೋಜನೆ ಇದೆ?
+
+How can farmers get loans?
+
+Which insurance covers crops?
+
+💬 Bot Response:
+PM Kisan, Fasal Bima Yojana, and Agri loans from banks are available for farmers. Visit your local bank or Raitha Samparka Kendra.
+
+ 
+
+14. Intent: WomenInvestment
+💡 Topic: Investment options for working women
+🗨 Training Phrases:
+
+Which is better: FD or RD?
+
+ಮಹಿಳೆಯರು ಎಲ್ಲಿ ಹೂಡಿಕೆ ಮಾಡಬೇಕು?
+
+Is SIP good for women?
+
+What is a safe investment for my salary?
+
+💬 Bot Response:
+Women can invest in RD, PPF, SIPs, or gold bonds. Choose based on risk appetite, safety, and tax benefits.
+
+ 
+
+15. Intent: ProtectFinance
+💡 Topic: Digital fraud and safety
+🗨 Training Phrases:
+
+How can I avoid online banking fraud?
+
+OTP ಏಕೆ ಬೇಕು?
+
+ಹಣ ಕಳವೇ ಆಗದಂತೆ ನಾನು ಏನು ಮಾಡಬೇಕು?
+
+Is UPI safe?
+
+💬 Bot Response:
+Never share OTPs. Avoid clicking unknown links. Enable UPI pin & alerts. RBI protects your money in case of frauds

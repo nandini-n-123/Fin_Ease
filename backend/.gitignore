@@ -1,0 +1,17 @@
+# Ignore virtual environment folder
+finease/
+
+# Bytecode and cache
+__pycache__/
+*.py[cod]
+*.log
+
+# VS Code config
+.vscode/
+
+# Environment variables
+.env
+
+# OS-specific files
+.DS_Store
+Thumbs.db
