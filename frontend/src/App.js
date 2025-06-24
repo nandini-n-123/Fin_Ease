@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
+import './App.css';
 
 // Main App Component
 function App() {
   // --- STATES ---
-  // ... right after your other useState lines
   const [isListening, setIsListening] = useState(false);
   const [isVoiceSupported, setIsVoiceSupported] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [activeView, setActiveView] = useState('auth');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(true); // Set to true for easier testing
+  const [activeView, setActiveView] = useState('chat'); // Start at chat view
+  const [username, setUsername] = useState('user'); // Pre-fill for testing
+  const [password, setPassword] = useState('password');
+  const [email, setEmail] = useState('user@example.com');
   const [loginError, setLoginError] = useState('');
   const [signupError, setSignupError] = useState('');
   const [isSigningUp, setIsSigningUp] = useState(false);
@@ -51,7 +51,6 @@ function App() {
     ]
   };
 
-  // --- 1. NEW: DATA FOR SAMPLE FAQ QUESTIONS ---
   const sampleFaqQuestions = [
     {
         "en": "What is an investment?",
@@ -70,46 +69,52 @@ function App() {
         "kn": "ರೈತರಿಗಾಗಿ ಇರುವ ಯೋಜನೆಗಳು ಯಾವುವು?"
     }
   ];
-// Add this near your other useRef hooks
-const recognitionRef = useRef(null);
 
-// Add this new useEffect hook with your other useEffects
-useEffect(() => {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognitionRef = useRef(null);
 
-  if (!SpeechRecognition) {
-    setIsVoiceSupported(false);
-    console.error("Speech Recognition is not supported in this browser.");
-    return;
-  }
+  // --- CHANGE 1: UPDATED VOICE RECOGNITION LOGIC ---
+  // This useEffect now checks which view is active to update the correct input field.
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-  const recognition = new SpeechRecognition();
-  recognition.continuous = false; // Stop listening after a pause
-  recognition.interimResults = false;
-  recognition.lang = language === 'en' ? 'en-US' : 'kn-IN'; // Use the current language state!
+    if (!SpeechRecognition) {
+      setIsVoiceSupported(false);
+      console.error("Speech Recognition is not supported in this browser.");
+      return;
+    }
 
-  recognition.onstart = () => {
-    setIsListening(true);
-  };
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = language === 'en' ? 'en-US' : 'kn-IN';
 
-  recognition.onend = () => {
-    setIsListening(false);
-  };
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
 
-  recognition.onerror = (event) => {
-    console.error("Speech recognition error:", event.error);
-    setIsListening(false);
-  };
+    recognition.onend = () => {
+      setIsListening(false);
+    };
 
-  recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
-    setFaqInput(transcript); // Send the result to the bot
-  };
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error:", event.error);
+      setIsListening(false);
+    };
 
-  recognitionRef.current = recognition;
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      // This logic now correctly routes the transcript to the active input
+      if (activeView === 'compare') {
+          setRagInput(transcript);
+      } else {
+          setFaqInput(transcript);
+      }
+    };
 
-}, [language]); // Rerun this setup if the language changes
-  // --- useEffect Hooks ---
+    recognitionRef.current = recognition;
+
+  }, [language, activeView]); // Added activeView to the dependency array
+
   useEffect(() => {
     if (activeView === 'chat') {
         faqChatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -128,7 +133,6 @@ useEffect(() => {
     }
   }, [activeView, isLoggedIn, username]);
 
-  // --- Event Handlers & Functions ---
   const handleLanguageToggle = () => setLanguage(prev => prev === 'en' ? 'kn' : 'en');
   const handleLogin = (e) => { e.preventDefault(); setLoginError(''); if (username === 'user' && password === 'password') { setIsLoggedIn(true); setActiveView('chat'); } else { setLoginError('Invalid credentials.'); } };
   const handleSignup = (e) => { e.preventDefault(); setSignupError(''); if (username && email && password) { setIsLoggedIn(true); setActiveView('chat'); } else { setSignupError('Please fill all fields.'); } };
@@ -142,13 +146,11 @@ useEffect(() => {
     await sendFaqMessage(currentInput);
   };
 
-  // --- 2. NEW: HANDLER FOR CLICKING A SAMPLE QUESTION ---
   const handleSampleQuestionClick = async (question) => {
     if (isFaqSending) return;
     await sendFaqMessage(question);
   };
   
-  // Refactored sending logic to be reusable
   const sendFaqMessage = async (messageText) => {
     const userMsg = { id: crypto.randomUUID(), message: messageText, sender: 'user', timestamp: new Date().toISOString() };
     setFaqMessages((prev) => [...prev, userMsg]);
@@ -168,7 +170,7 @@ useEffect(() => {
         setIsFaqSending(false);
     }
   };
-  // This new function will replace the placeholder you had before
+
   const handleVoiceInput = () => {
     if (!isVoiceSupported) {
       alert("Sorry, your browser does not support voice input.");
@@ -315,7 +317,6 @@ useEffect(() => {
   const handleLinkedAccountSignIn = (accountId) => { setLinkedAccounts(prevAccounts => prevAccounts.map(acc => acc.id === accountId ? { ...acc, status: 'active' } : acc)); };
   const handleLinkedAccountRemove = (accountId) => { setLinkedAccounts(prevAccounts => prevAccounts.filter(acc => acc.id !== accountId)); };
 
-  // --- RENDER FUNCTION ---
   const renderContent = () => {
     if (!isLoggedIn) {
       return (
@@ -404,25 +405,42 @@ useEffect(() => {
                     <div ref={ragChatEndRef} />
                 </div>
                 
+                {/* --- CHANGE 2: NEW FOLLOW-UP FORM WITH VOICE INPUT --- */}
                 {sessionId && (
-                    <form onSubmit={handleFaqSendMessage} className="p-4 bg-white border-t">
-                    <div className="flex items-center space-x-4 max-w-3xl mx-auto">
-                      <input type="text" value={faqInput} onChange={(e) => setFaqInput(e.target.value)} className="flex-1 p-3 border rounded-lg" placeholder={language === 'en' ? 'Ask a follow up question' : 'ಯಾವುದೇ ಹಣಕಾಸು ಸಂಬಂಧಿತ ಪ್ರಶ್ನೆಗಳನ್ನು ಕೇಳಿ...'} disabled={isFaqSending} />
-                      
-                      <button 
-                        type="button" 
-                        onClick={handleVoiceInput} 
-                        title="Voice Input"
-                        className={`p-3 rounded-lg text-white transition-colors ${isListening ? 'bg-red-600 animate-pulse' : 'bg-purple-600 hover:bg-purple-700'}`}
-                        disabled={!isVoiceSupported || isFaqSending}
-                      >
-                        <i className="fas fa-microphone text-xl"></i>
-                      </button>
-      
-                      <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg disabled:bg-gray-400" disabled={isFaqSending || !faqInput.trim()}>Send</button>
+                    <div className="p-4 bg-white border-t flex-shrink-0">
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                handleRagQuestionSubmit(sessionId, ragInput);
+                            }}
+                            className="flex items-center space-x-4 max-w-3xl mx-auto"
+                        >
+                            <input
+                                type="text"
+                                value={ragInput}
+                                onChange={(e) => setRagInput(e.target.value)}
+                                className="flex-1 p-3 border border-gray-300 rounded-lg"
+                                placeholder={language === 'en' ? 'Ask a follow-up question...' : 'ಮುಂದಿನ ಪ್ರಶ್ನೆಯನ್ನು ಕೇಳಿ...'}
+                                disabled={isGenerating || isProcessing}
+                            />
+                            <button 
+                                type="button" 
+                                onClick={handleVoiceInput} 
+                                title="Voice Input"
+                                className={`p-3 rounded-lg text-white transition-colors ${isListening ? 'bg-red-600 animate-pulse' : 'bg-purple-600 hover:bg-purple-700'}`}
+                                disabled={!isVoiceSupported || isGenerating || isProcessing}
+                            >
+                                <i className="fas fa-microphone text-xl"></i>
+                            </button>
+                            <button
+                                type="submit"
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg disabled:bg-gray-400"
+                                disabled={isGenerating || isProcessing || !ragInput.trim()}
+                            >
+                                {language === 'en' ? 'Ask' : 'ಕೇಳಿ'}
+                            </button>
+                        </form>
                     </div>
-                  </form>
-                    
                 )}
             </div>
         );
@@ -482,7 +500,6 @@ useEffect(() => {
         return (
           <div className="flex flex-col h-full bg-gray-50">
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              {/* --- 3. UPDATED UI: SHOWS WELCOME + GRID OR MESSAGES --- */}
               {faqMessages.length === 0 ? (
                 <div className="text-center text-gray-500 mt-10">
                     <div className="mb-8">{language === 'en' ? 'Welcome! Ask me a general financial question, or try one of these:' : 'ಸ್ವಾಗತ! ಸಾಮಾನ್ಯ ಹಣಕಾಸಿನ ಪ್ರಶ್ನೆಯನ್ನು ಕೇಳಿ, ಅಥವಾ ಇವುಗಳಲ್ಲಿ ಒಂದನ್ನು ಪ್ರಯತ್ನಿಸಿ:'}</div>
@@ -536,7 +553,9 @@ useEffect(() => {
     <div className="flex h-screen bg-gray-900 font-inter">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
       <div className="w-64 bg-gray-900 text-white flex flex-col shadow-2xl">
-        <div className="p-6 text-3xl font-extrabold text-center text-blue-400 border-b border-gray-700">Finease</div>
+        <div className="p-6 flex justify-center items-center border-b border-gray-700">
+            <img src="/finease-removebg-preview-new.png" alt="Finease Logo" className="logo" />
+        </div>
         <nav className="flex-1 p-4 space-y-3">
           {isLoggedIn && (
             <>

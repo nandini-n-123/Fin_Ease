@@ -1,3 +1,4 @@
+import certifi # <-- Ensures this library is available
 import os
 import uuid
 from fastapi import FastAPI, HTTPException
@@ -48,16 +49,29 @@ async def startup_db_client():
     mongo_url = os.getenv("MONGO_URL")
     if not mongo_url:
         raise ValueError("MONGO_URL environment variable is required.")
-    client = motor.motor_asyncio.AsyncIOMotorClient(mongo_url)
-    database = client["finease"] 
-    print("INFO: Successfully connected to MongoDB for FAQ Chatbot!")
+
+    # --- THIS IS THE CRITICAL FIX ---
+    # We add the tlsCAFile argument to tell the client where to find trusted certificates.
+    client = motor.motor_asyncio.AsyncIOMotorClient(mongo_url, tlsCAFile=certifi.where())
+    # --- END OF FIX ---
+    
+
+    database = client["chatbotdb"] # Use your database name, e.g., "FinEaseDB"
+    
+    # This ping command will now use the secure connection to verify
+    try:
+        await database.command('ping')
+        print("INFO: Successfully connected to MongoDB for FAQ Chatbot!")
+    except Exception as e:
+        print(f"ERROR: Could not connect to MongoDB. Please check your connection string and firewall settings. Error: {e}")
+        raise
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
     if client:
         client.close()
 
-# --- API Routers and Endpoints ---
+# --- API Routers and Endpoints (Your code is unchanged below this line) ---
 app.include_router(chat.router, prefix="/api")
 
 @app.post("/api/process-urls")
@@ -82,7 +96,6 @@ async def chat_with_rag_documents(request: ChatRequest):
     
     session_data = SESSIONS[request.session_id]
     
-    # Create the input dictionary for the chain
     chain_input = {"question": request.question, "language": request.language}
     
     try:
