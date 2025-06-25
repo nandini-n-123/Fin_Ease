@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        // We only need to define NodeJS here, as Sonar Scanner will be handled inside its stage.
+        // We only need NodeJS here. Sonar Scanner will be handled inside its stage.
         nodejs 'NodeJS-18'
     }
 
@@ -31,20 +31,20 @@ pipeline {
             steps {
                 // This 'withSonarQubeEnv' step configures the connection to the server named 'SonarCloud'
                 withSonarQubeEnv('SonarCloud') {
-                    // This 'tool' step finds the SonarQube Scanner you configured with the name 'sonar-scanner'
-                    // and gets its installation path.
-                    def scannerHome = tool name: 'sonar-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-
-                    // We now run the scanner command by providing its full path and passing the login token securely
-                    // This is the most reliable way and avoids PATH issues.
-                    sh "'${scannerHome}/bin/sonar-scanner' -Dsonar.projectKey=nandini-n-123_Fin_Ease -Dsonar.organization=nandini-n-123 -Dsonar.sources=. -Dsonar.login=${SONAR_TOKEN}"
+                    // --- THIS IS THE CORRECTED BLOCK ---
+                    // 'def' is Groovy code, so it must be inside a 'script' block.
+                    script {
+                        // Get the installation path of the tool named 'sonar-scanner'
+                        def scannerHome = tool 'sonar-scanner'
+                        // Now run the scanner command using its full path
+                        sh "'${scannerHome}/bin/sonar-scanner' -Dsonar.projectKey=nandini-n-123_Fin_Ease -Dsonar.organization=nandini-n-123 -Dsonar.sources=. -Dsonar.login=${SONAR_TOKEN}"
+                    }
                 }
             }
         }
 
         stage('Wait for SonarCloud Quality Gate') {
             steps {
-                // This stage waits for the analysis to complete on SonarCloud's side
                 timeout(time: 10, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
@@ -75,8 +75,6 @@ pipeline {
                             sh 'npm run build'
 
                             echo "Deploying frontend to Vercel..."
-                            // The vercel CLI uses the VERCEL_ORG_ID and VERCEL_PROJECT_ID
-                            // environment variables to link to the correct project automatically.
                             sh 'npx vercel --prod --token ${VERCEL_TOKEN} --yes'
                         }
                     }
