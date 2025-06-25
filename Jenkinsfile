@@ -1,3 +1,5 @@
+deleteDir() // clean workspace
+
 pipeline {
     agent any
 
