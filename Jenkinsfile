@@ -1,14 +1,14 @@
 pipeline {
+    // This agent will run on the new Jenkins server with Java 17
     agent any
 
     tools {
-        // These tools will be available for all stages
+        // We only need NodeJS for the frontend build
         nodejs 'NodeJS-18'
-        jdk 'JDK-17' // The name must match what you configured in Jenkins Tools
     }
 
     environment {
-        // This securely loads the credentials you created in Jenkins
+        // Your credentials remain the same
         RENDER_API_KEY  = credentials('render-api-key')
         VERCEL_TOKEN    = credentials('vercel-token')
         VERCEL_ORG_ID   = credentials('vercel-org-id')
@@ -16,7 +16,7 @@ pipeline {
         SONAR_TOKEN     = credentials('sonarcloud-token')
         GITHUB_CREDS    = credentials('github-credentials')
 
-        // Your correct Render Service ID
+        // Your Render Service ID
         RENDER_SERVICE_ID = 'srv-d1d6ofh5pdvs73aeqit0' 
     }
 
@@ -30,10 +30,10 @@ pipeline {
 
         stage('SonarCloud Analysis') {
             steps {
-                // This 'withSonarQubeEnv' step configures the connection to the server named 'SonarCloud'
+                // This 'withSonarQubeEnv' step configures the connection
                 withSonarQubeEnv('SonarCloud') {
-                    // This is the simplest way to run the scanner.
-                    // Jenkins will use the JDK configured for this step and find the scanner.
+                    // This is the simplest and most direct way to run the scanner.
+                    // It will now work because the Jenkins agent has the correct Java version.
                     sh "sonar-scanner -Dsonar.projectKey=nandini-n-123_Fin_Ease -Dsonar.organization=nandini-n-123 -Dsonar.sources=. -Dsonar.login=${SONAR_TOKEN}"
                 }
             }
@@ -51,7 +51,7 @@ pipeline {
             parallel {
                 stage('Deploy Backend to Render') {
                     steps {
-                        echo "Triggering Render deployment for service ID: ${RENDER_SERVICE_ID}"
+                        echo "Triggering Render deployment..."
                         sh """
                         curl -X POST \\
                           -H "Authorization: Bearer ${RENDER_API_KEY}" \\
@@ -64,13 +64,10 @@ pipeline {
                 stage('Deploy Frontend to Vercel') {
                     steps {
                         dir('frontend') {
-                            echo "Installing frontend dependencies..."
+                            echo "Installing, Building, and Deploying Frontend..."
                             sh 'npm install'
-                            
-                            echo "Building React app..."
                             sh 'npm run build'
-
-                            echo "Deploying frontend to Vercel..."
+                            // This command uses the Vercel credentials to deploy automatically
                             sh 'npx vercel --prod --token ${VERCEL_TOKEN} --yes'
                         }
                     }
