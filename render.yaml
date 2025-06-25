@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: finease-backend
+    runtime: docker
+    repo: https://github.com/nandini-n-123/Fin_Ease.git
+    rootDir: backend
+    healthCheck:
+      path: /
+      initialDelaySeconds: 300
