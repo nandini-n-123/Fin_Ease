@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 # LangChain libraries for building the RAG pipeline
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import HuggingFaceEmbeddings # Updated import
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
@@ -26,8 +26,15 @@ class RAGService:
         Initializes the service by loading the necessary AI models.
         """
         # --- Using the smaller, reliable multilingual model ---
-        model_name = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-        self.embedding_model = HuggingFaceEmbeddings(model_name=model_name)
+        # This new code uses the Google API instead
+        google_api_key = os.getenv("GOOGLE_API_KEY")
+        if not google_api_key:
+            raise ValueError("GOOGLE_API_KEY not found in environment variables.")
+
+        self.embedding_model = GoogleGenerativeAIEmbeddings(
+            model="models/embedding-001",
+            google_api_key=google_api_key
+        )
 
         # Initialize the LLM (Gemini)
         self.llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest",
