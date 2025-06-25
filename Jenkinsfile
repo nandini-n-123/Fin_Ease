@@ -2,8 +2,9 @@ pipeline {
     agent any
 
     tools {
-        // We only need NodeJS here. Sonar Scanner will be handled inside its stage.
+        // These tools will be available for all stages
         nodejs 'NodeJS-18'
+        jdk 'JDK-17' // The name must match what you configured in Jenkins Tools
     }
 
     environment {
@@ -31,14 +32,9 @@ pipeline {
             steps {
                 // This 'withSonarQubeEnv' step configures the connection to the server named 'SonarCloud'
                 withSonarQubeEnv('SonarCloud') {
-                    // --- THIS IS THE CORRECTED BLOCK ---
-                    // 'def' is Groovy code, so it must be inside a 'script' block.
-                    script {
-                        // Get the installation path of the tool named 'sonar-scanner'
-                        def scannerHome = tool 'sonar-scanner'
-                        // Now run the scanner command using its full path
-                        sh "'${scannerHome}/bin/sonar-scanner' -Dsonar.projectKey=nandini-n-123_Fin_Ease -Dsonar.organization=nandini-n-123 -Dsonar.sources=. -Dsonar.login=${SONAR_TOKEN}"
-                    }
+                    // This is the simplest way to run the scanner.
+                    // Jenkins will use the JDK configured for this step and find the scanner.
+                    sh "sonar-scanner -Dsonar.projectKey=nandini-n-123_Fin_Ease -Dsonar.organization=nandini-n-123 -Dsonar.sources=. -Dsonar.login=${SONAR_TOKEN}"
                 }
             }
         }
