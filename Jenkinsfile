@@ -2,8 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'NodeJS-18'
-        sonarQubeScanner 'sonar-scanner'   // 👈 This matches the name in your screenshot
+        nodejs 'NodeJS-18'  // ✅ Only NodeJS is needed
     }
 
     environment {
