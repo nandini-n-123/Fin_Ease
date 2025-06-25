@@ -4,7 +4,7 @@ pipeline {
     tools {
         // These names must match what you configured in Manage Jenkins > Tools
         nodejs 'NodeJS-18'
-        sonar_scanner 'sonar-scanner'
+        
     }
 
     environment {
