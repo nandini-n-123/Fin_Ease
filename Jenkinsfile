@@ -24,18 +24,24 @@ pipeline {
         }
 
         stage('SonarCloud Analysis') {
-            steps {
-                withSonarQubeEnv('SonarCloud') {
-                    sh '''
-                        sonar-scanner \
-                          -Dsonar.projectKey=nandini-n-123_Fin_Ease \
-                          -Dsonar.organization=nandini-n-123 \
-                          -Dsonar.sources=. \
-                          -Dsonar.login=$SONAR_TOKEN
-                    '''
-                }
+    steps {
+        script {
+           
+            def scannerHome = tool name: 'sonar-scanner'
+
+            withSonarQubeEnv('SonarCloud') {
+                sh """
+                    ${scannerHome}/bin/sonar-scanner \
+                    -Dsonar.projectKey=nandini-n-123_Fin_Ease \
+                    -Dsonar.organization=nandini-n-123 \
+                    -Dsonar.sources=. \
+                    -Dsonar.login=$SONAR_TOKEN
+                """
             }
         }
+    }
+}
+
 
         stage('Wait for SonarCloud Quality Gate') {
             steps {
