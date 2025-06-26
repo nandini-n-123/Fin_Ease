@@ -131,7 +131,7 @@ function App() {
     if (activeView === 'history' && isLoggedIn && username) {
       loadHistoricalMessages(username);
     }
-  }, [activeView, isLoggedIn, username]);
+  }, [activeView, isLoggedIn, username,loadHistoricalMessages]);
 
   const handleLanguageToggle = () => setLanguage(prev => prev === 'en' ? 'kn' : 'en');
   const handleLogin = (e) => { e.preventDefault(); setLoginError(''); if (username === 'user' && password === 'password') { setIsLoggedIn(true); setActiveView('chat'); } else { setLoginError('Invalid credentials.'); } };
