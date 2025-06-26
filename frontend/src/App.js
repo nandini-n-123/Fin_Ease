@@ -119,13 +119,13 @@ function App() {
     if (activeView === 'chat') {
         faqChatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [faqMessages]);
+  }, [activeView,faqMessages]);
 
   useEffect(() => {
     if (activeView === 'compare') {
         ragChatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [ragConversation]);
+  }, [activeView,ragConversation]);
 
   useEffect(() => {
     if (activeView === 'history' && isLoggedIn && username) {
