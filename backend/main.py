@@ -18,7 +18,8 @@ app = FastAPI(
     version="4.0.0",
 )
 
-origins = ["http://localhost", "http://localhost:3000"]
+origins = ["http://localhost", "http://localhost:3000","https://fin-ease.vercel.app",  # Your Production URL
+    "https://fin-ease-mjzysd58p-nandini-ns-projects.vercel.app"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
