@@ -72,6 +72,19 @@ function App() {
 
   const recognitionRef = useRef(null);
 
+
+  const loadHistoricalMessages = useCallback(async (currentUserId) => {
+    if (!currentUserId) return;
+    try {
+      const response = await fetch(`${API_BASE_URL}/chat/history/${currentUserId}`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const history = await response.json();
+      setHistoricalMessages(history);
+    } catch (error) {
+      console.error("Failed to load historical messages:", error);
+      setHistoricalMessages([]);
+    }
+  }, [API_BASE_URL]);
   // --- CHANGE 1: UPDATED VOICE RECOGNITION LOGIC ---
   // This useEffect now checks which view is active to update the correct input field.
   useEffect(() => {
@@ -152,19 +165,7 @@ function App() {
     await sendFaqMessage(question);
   };
   
-  const loadHistoricalMessages = useCallback(async (currentUserId) => {
-    const API_BASE_URL = process.env.REACT_APP_API_URL; // Define this inside if needed, or ensure it's stable
-    if (!currentUserId) return;
-    try {
-      const response = await fetch(`${API_BASE_URL}/chat/history/${currentUserId}`);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const history = await response.json();
-      setHistoricalMessages(history);
-    } catch (error) {
-      console.error("Failed to load historical messages:", error);
-      setHistoricalMessages([]);
-    }
-  }, []); // <-- The empty array tells React this function never changes.
+  
 
   const sendFaqMessage = async (messageText) => {
     const userMsg = { id: crypto.randomUUID(), message: messageText, sender: 'user', timestamp: new Date().toISOString() };
