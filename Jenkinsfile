@@ -67,20 +67,13 @@ pipeline {
                         """
                     }
                 }
-                stage('Deploy Frontend to Vercel') {
+                // This is the new, simpler stage
+stage('Deploy Frontend to Vercel') {
     steps {
-        script {
-            // First, run install and build inside the frontend directory
-            dir('frontend') {
-                echo "Installing dependencies and building frontend..."
-                sh 'npm install'
-                sh 'npm run build'
-            }
-
-            // Then, deploy from the root, pointing to the frontend directory
-            echo "Deploying frontend to Vercel..."
-            sh 'npx vercel frontend --prod --token ${VERCEL_TOKEN} --yes'
-        }
+        // We no longer build in Jenkins. We just tell Vercel to deploy.
+        // Vercel will use the "Root Directory" setting to find and build your app itself.
+        echo "Triggering Vercel production deployment..."
+        sh 'npx vercel --prod --token ${VERCEL_TOKEN} --yes'
     }
 }
             }
