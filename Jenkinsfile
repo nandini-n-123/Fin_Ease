@@ -68,15 +68,21 @@ pipeline {
                     }
                 }
                 stage('Deploy Frontend to Vercel') {
-                    steps {
-                        dir('frontend') {
-                            echo "Installing, Building, and Deploying Frontend..."
-                            sh 'npm install'
-                            sh 'npm run build'
-                            sh 'npx vercel . --prod --token ${VERCEL_TOKEN} --yes'
-                        }
-                    }
-                }
+    steps {
+        script {
+            // First, run install and build inside the frontend directory
+            dir('frontend') {
+                echo "Installing dependencies and building frontend..."
+                sh 'npm install'
+                sh 'npm run build'
+            }
+
+            // Then, deploy from the root, pointing to the frontend directory
+            echo "Deploying frontend to Vercel..."
+            sh 'npx vercel frontend --prod --token ${VERCEL_TOKEN} --yes'
+        }
+    }
+}
             }
         }
     }
