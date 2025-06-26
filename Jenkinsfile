@@ -73,7 +73,7 @@ pipeline {
                             echo "Installing, Building, and Deploying Frontend..."
                             sh 'npm install'
                             sh 'npm run build'
-                            sh 'npx vercel --prod --token ${VERCEL_TOKEN} --yes'
+                            sh 'npx vercel . --prod --token ${VERCEL_TOKEN} --yes'
                         }
                     }
                 }
