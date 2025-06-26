@@ -25,6 +25,22 @@ pipeline {
             }
         }
 
+        // vvvvvv PASTE THIS ENTIRE NEW STAGE HERE vvvvvv
+        stage('Dependency Security Scan') {
+            steps {
+                // We go into the 'frontend' directory to find its package.json
+                dir('frontend') {
+                    echo 'Running security audit on frontend dependencies...'
+                    
+                    // This command checks for known vulnerabilities.
+                    // '--audit-level=high' means the pipeline will only fail if 'high' or 'critical'
+                    // severity vulnerabilities are found. It will pass for low/moderate ones.
+                    sh 'npm audit --audit-level=high'
+                }
+            }
+        }
+        // ^^^^^^ END OF THE NEW STAGE ^^^^^^
+
         stage('SonarCloud Analysis') {
     steps {
         script {
