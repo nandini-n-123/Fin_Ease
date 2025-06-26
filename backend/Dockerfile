@@ -15,4 +15,4 @@ COPY . /code/
 
 # The command to run your app using Gunicorn when the container starts
 # This uses the Mangum adapter, which is necessary for AWS Lambda
-CMD gunicorn -k uvicorn.workers.UvicornWorker -b 0.0.0.0:$PORT main:app
+CMD ["/bin/sh", "-c", "gunicorn -k uvicorn.workers.UvicornWorker -b 0.0.0.0:$PORT main:app"]
