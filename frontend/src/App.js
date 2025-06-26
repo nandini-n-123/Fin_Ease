@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './App.css';
 
 // Main App Component
@@ -127,19 +127,7 @@ function App() {
     }
   }, [activeView,ragConversation]);
 
-  const loadHistoricalMessages = async (currentUserId) => {
-    if (!currentUserId) return;
-    try {
-      const response = await fetch(`${API_BASE_URL}/chat/history/${currentUserId}`);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const history = await response.json();
-      setHistoricalMessages(history);
-    } catch (error) {
-      console.error("Failed to load historical messages:", error);
-      setHistoricalMessages([]);
-    }
-  };
-  
+
   useEffect(() => {
     if (activeView === 'history' && isLoggedIn && username) {
       loadHistoricalMessages(username);
@@ -164,6 +152,20 @@ function App() {
     await sendFaqMessage(question);
   };
   
+  const loadHistoricalMessages = useCallback(async (currentUserId) => {
+    const API_BASE_URL = process.env.REACT_APP_API_URL; // Define this inside if needed, or ensure it's stable
+    if (!currentUserId) return;
+    try {
+      const response = await fetch(`${API_BASE_URL}/chat/history/${currentUserId}`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const history = await response.json();
+      setHistoricalMessages(history);
+    } catch (error) {
+      console.error("Failed to load historical messages:", error);
+      setHistoricalMessages([]);
+    }
+  }, []); // <-- The empty array tells React this function never changes.
+
   const sendFaqMessage = async (messageText) => {
     const userMsg = { id: crypto.randomUUID(), message: messageText, sender: 'user', timestamp: new Date().toISOString() };
     setFaqMessages((prev) => [...prev, userMsg]);
