@@ -18,8 +18,14 @@ app = FastAPI(
     version="4.0.0",
 )
 
-origins = ["http://localhost", "http://localhost:3000","https://fin-ease.vercel.app",  # Your Production URL
-    "https://fin-ease-mjzysd58p-nandini-ns-projects.vercel.app"]
+# vvvvvv REPLACE your old code with this block vvvvvv
+
+origins = [
+    "https://fin-ease.vercel.app",  # Your main Production URL
+    "https://fin-ease-qf8iccyk1-nandini-ns-projects.vercel.app", # Your LATEST Preview URL
+    "http://localhost:3000",          # For local development
+]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -27,6 +33,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ^^^^^^ END of block to replace ^^^^^^
 
 # --- Global Services ---
 client = None
