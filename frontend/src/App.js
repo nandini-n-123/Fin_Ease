@@ -127,6 +127,19 @@ function App() {
     }
   }, [activeView,ragConversation]);
 
+  const loadHistoricalMessages = async (currentUserId) => {
+    if (!currentUserId) return;
+    try {
+      const response = await fetch(`${API_BASE_URL}/chat/history/${currentUserId}`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const history = await response.json();
+      setHistoricalMessages(history);
+    } catch (error) {
+      console.error("Failed to load historical messages:", error);
+      setHistoricalMessages([]);
+    }
+  };
+  
   useEffect(() => {
     if (activeView === 'history' && isLoggedIn && username) {
       loadHistoricalMessages(username);
@@ -276,18 +289,7 @@ function App() {
     }
   };
 
-  const loadHistoricalMessages = async (currentUserId) => {
-    if (!currentUserId) return;
-    try {
-      const response = await fetch(`${API_BASE_URL}/chat/history/${currentUserId}`);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const history = await response.json();
-      setHistoricalMessages(history);
-    } catch (error) {
-      console.error("Failed to load historical messages:", error);
-      setHistoricalMessages([]);
-    }
-  };
+  
 
   const handleClearHistory = async () => {
     if (!username) {
