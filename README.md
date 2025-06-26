@@ -1,1 +1,1 @@
-# FinEase
+# FinEase PROJECT
