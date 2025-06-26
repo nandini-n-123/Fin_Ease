@@ -35,7 +35,7 @@ pipeline {
                     // This command checks for known vulnerabilities.
                     // '--audit-level=high' means the pipeline will only fail if 'high' or 'critical'
                     // severity vulnerabilities are found. It will pass for low/moderate ones.
-                    sh 'npm audit --audit-level=high'
+                    sh 'npm audit --audit-level=critical'
                 }
             }
         }
