@@ -42,19 +42,34 @@ pipeline {
         }
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
         // vvvvvv REPLACE the old 'Run Backend Tests' stage with this one vvvvvv
+        // vvvvvv REPLACE the old 'Run Backend Tests' stage with this FINAL version vvvvvv
         stage('Run Backend Tests') {
             steps {
                 dir('backend') {
-                    // We use a 'script' block to allow for variable definitions
                     script {
-                        echo "Installing Python dependencies and running Pytest..."
+                        echo "Attempting to install Python dependencies and run Pytest..."
                         
-                        // 1. Get the absolute path to the Python tool installation
-                        def pythonTool = tool name: 'Python3.9'
+                        // Step 1: Find the Python tool and print its path for debugging
+                        def pythonHome = tool name: 'Python3.9'
+                        echo "Jenkins resolved the Python tool path to: ${pythonHome}"
 
-                        // 2. Explicitly run pip and pytest using the full path
-                        sh "${pythonTool}/bin/pip install -r requirements.txt"
-                        sh "${pythonTool}/bin/pytest ../tests"
+                        // Step 2: Define the full, absolute paths to the executables
+                        def pipExecutable = "${pythonHome}/bin/pip"
+                        def pytestExecutable = "${pythonHome}/bin/pytest"
+
+                        // Step 3: Add debugging to see the contents of the 'bin' directory
+                        echo "Listing contents of the Python bin directory..."
+                        sh "ls -la ${pythonHome}/bin/"
+
+                        // Step 4: Explicitly check if the 'pip' executable file exists
+                        sh "if [ -f ${pipExecutable} ]; then echo 'SUCCESS: pip executable was found.'; else echo 'ERROR: pip executable was NOT found at ${pipExecutable}'; exit 1; fi"
+
+                        // Step 5: Run the commands using the full path with extra quotes for safety
+                        echo "Now running pip install..."
+                        sh "'${pipExecutable}' install -r requirements.txt"
+
+                        echo "Now running pytest..."
+                        sh "'${pytestExecutable}' ../tests"
                     }
                 }
             }
