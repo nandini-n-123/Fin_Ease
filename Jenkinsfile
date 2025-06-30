@@ -40,6 +40,17 @@ pipeline {
             }
         }
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
+        stage('Run Backend Tests') {
+        steps {
+            dir('backend') {
+                echo "Installing Python dependencies and running Pytest..."
+                // First, install all dependencies from the updated requirements file
+                sh 'pip install -r requirements.txt'
+                // Then, run pytest. We point it to the ../tests directory.
+                sh 'pytest ../tests'
+            }
+        }
+    }
 
         stage('SonarCloud Analysis') {
     steps {
@@ -68,6 +79,30 @@ pipeline {
                 }
             }
         }
+
+        stage('Build Backend Docker Image') {
+        steps {
+            echo "Building the backend Docker image..."
+            dir('backend') {
+                // We tag the image with the Jenkins build number for a unique version
+                sh "docker build -t fin-ease-backend:${env.BUILD_NUMBER} ."
+            }
+        }
+    }
+
+    // --- STAGE 7: SCAN IMAGE WITH TRIVY (NEW) ---
+    stage('Scan Image with Trivy') {
+        steps {
+            echo "Scanning Docker image for OS and dependency vulnerabilities..."
+            // This runs the Trivy container to scan the image we just built
+            sh """
+                docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+                    -v trivy-cache:/root/.cache/ \
+                    aquasec/trivy:latest \
+                    image --exit-code 1 --severity HIGH,CRITICAL fin-ease-backend:${env.BUILD_NUMBER}
+            """
+        }
+    }
 
         stage('Build and Deploy') {
             parallel {
