@@ -3,17 +3,20 @@
 # Switch to the root user to manage groups and users
 USER root
 
-# This is the key fix:
-# It checks the group ID of the mounted docker.sock file,
-# creates a 'docker' group with that same ID inside the container,
-# and adds the 'jenkins' user to that group.
+# vvvvvv ADD THIS ENTIRE BLOCK vvvvvv
+# Add a marker so we can prove this new image is running
+RUN echo ">>> This is the NEW Jenkins image with Docker permissions v2 <<<"
+
+# The permissions fix
 RUN DOCKER_SOCKET_GID=$(stat -c '%g' /var/run/docker.sock) && \
     groupadd -g ${DOCKER_SOCKET_GID} docker && \
     usermod -aG docker jenkins
+# ^^^^^^ END OF BLOCK TO ADD ^^^^^^
 
 # Switch back to the standard, non-root 'jenkins' user for security
 USER jenkins
-# ^^^^^^ END OF NEW LINES ^^^^^^
+
+# ... the rest of your Dockerfile continues here
 
 # ... the rest of your Dockerfile continues here
 # ... the rest of your Dockerfile continues here
