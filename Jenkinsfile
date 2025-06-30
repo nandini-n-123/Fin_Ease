@@ -3,12 +3,12 @@
 pipeline {
     agent any
 
-    
+    tools {
+        nodejs 'NodeJS-18'
+     // ✅ Only NodeJS is needed
+    }
 
     environment {
-        NODEJS_HOME = tool name: 'NodeJS-18'
-        PYTHON_HOME = tool name: 'Python3.9'
-        PATH = "${env.NODEJS_HOME}/bin:${env.PYTHON_HOME}/bin:${env.PATH}"
         RENDER_API_KEY      = credentials('render-api-key')
         VERCEL_TOKEN        = credentials('vercel-token')
         VERCEL_ORG_ID       = credentials('vercel-org-id')
@@ -41,17 +41,25 @@ pipeline {
             }
         }
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
+        // vvvvvv REPLACE the old 'Run Backend Tests' stage with this one vvvvvv
         stage('Run Backend Tests') {
-        steps {
-            dir('backend') {
-                echo "Installing Python dependencies and running Pytest..."
-                // First, install all dependencies from the updated requirements file
-                sh 'pip install -r requirements.txt'
-                // Then, run pytest. We point it to the ../tests directory.
-                sh 'pytest ../tests'
+            steps {
+                dir('backend') {
+                    // We use a 'script' block to allow for variable definitions
+                    script {
+                        echo "Installing Python dependencies and running Pytest..."
+                        
+                        // 1. Get the absolute path to the Python tool installation
+                        def pythonTool = tool name: 'Python3.9'
+
+                        // 2. Explicitly run pip and pytest using the full path
+                        sh "${pythonTool}/bin/pip install -r requirements.txt"
+                        sh "${pythonTool}/bin/pytest ../tests"
+                    }
+                }
             }
         }
-    }
+        // ^^^^^^ END OF THE NEW STAGE ^^^^^^
 
         stage('SonarCloud Analysis') {
     steps {
