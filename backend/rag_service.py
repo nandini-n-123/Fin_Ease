@@ -1,6 +1,8 @@
 import os
-import requests
+import requests   #this is the library used to make the http request to fetch the content from the web url 
 from bs4 import BeautifulSoup
+
+#this library is used to clearly extract the text from the raw web pages 
 
 # LangChain libraries for building the RAG pipeline
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -9,7 +11,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_google_genai import ChatGoogleGenerativeAI  #it handles all the complexities while quering the genAI
 
 # --- CONFIGURATION ---
 # IMPORTANT: Make sure your Google API Key is set here.
@@ -66,7 +68,7 @@ class RAGService:
         try:
             headers = {'User-Agent': 'Mozilla/5.0'}
             response = requests.get(url, headers=headers, timeout=30) # Increased timeout
-            response.raise_for_status()
+            response.raise_for_status()#to check if the web request is successful or not ,to handle the bad requests 
             soup = BeautifulSoup(response.content, 'html.parser')
             text = ' '.join(soup.body.stripped_strings)
 
