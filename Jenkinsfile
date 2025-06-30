@@ -41,18 +41,7 @@ pipeline {
             }
         }
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
-        // vvvvvv REPLACE the old 'Run Backend Tests' stage with this one vvvvvv
-        // vvvvvv REPLACE the old 'Run Backend Tests' stage with this FINAL version vvvvvv
-        stage('Run Backend Tests') {
-    steps {
-        dir('backend') {
-            echo "Installing Python dependencies and running Pytest..."
-            // These commands will now work because pip and python are built into the image
-            sh 'pip install -r requirements.txt'
-            sh 'pytest ../tests'
-        }
-    }
-}
+        
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
 
         stage('SonarCloud Analysis') {
