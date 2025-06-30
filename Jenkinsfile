@@ -44,36 +44,15 @@ pipeline {
         // vvvvvv REPLACE the old 'Run Backend Tests' stage with this one vvvvvv
         // vvvvvv REPLACE the old 'Run Backend Tests' stage with this FINAL version vvvvvv
         stage('Run Backend Tests') {
-            steps {
-                dir('backend') {
-                    script {
-                        echo "Attempting to install Python dependencies and run Pytest..."
-                        
-                        // Step 1: Find the Python tool and print its path for debugging
-                        def pythonHome = tool name: 'Python3.9'
-                        echo "Jenkins resolved the Python tool path to: ${pythonHome}"
-
-                        // Step 2: Define the full, absolute paths to the executables
-                        def pipExecutable = "${pythonHome}/bin/pip"
-                        def pytestExecutable = "${pythonHome}/bin/pytest"
-
-                        // Step 3: Add debugging to see the contents of the 'bin' directory
-                        echo "Listing contents of the Python bin directory..."
-                        sh "ls -la ${pythonHome}/bin/"
-
-                        // Step 4: Explicitly check if the 'pip' executable file exists
-                        sh "if [ -f ${pipExecutable} ]; then echo 'SUCCESS: pip executable was found.'; else echo 'ERROR: pip executable was NOT found at ${pipExecutable}'; exit 1; fi"
-
-                        // Step 5: Run the commands using the full path with extra quotes for safety
-                        echo "Now running pip install..."
-                        sh "'${pipExecutable}' install -r requirements.txt"
-
-                        echo "Now running pytest..."
-                        sh "'${pytestExecutable}' ../tests"
-                    }
-                }
-            }
+    steps {
+        dir('backend') {
+            echo "Installing Python dependencies and running Pytest..."
+            // These commands will now work because pip and python are built into the image
+            sh 'pip install -r requirements.txt'
+            sh 'pytest ../tests'
         }
+    }
+}
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
 
         stage('SonarCloud Analysis') {
