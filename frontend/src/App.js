@@ -34,7 +34,16 @@ function App() {
     { id: '2', name: 'NANDINI N.', email: '1ms22is085@msrit.edu', status: 'signed out' },
   ]);
   
-  const API_BASE_URL = process.env.REACT_APP_API_URL;
+  // This block dynamically sets the backend URL based on the environment
+let API_BASE_URL;
+
+if (process.env.NODE_ENV === 'production') {
+  // This is for the deployed version on Vercel
+  API_BASE_URL = process.env.REACT_APP_API_URL;
+} else {
+  // This is for your local development (`npm start`)
+  API_BASE_URL = 'http://localhost:8000/api';
+}
 
   const samplePrompts = {
     en: [
