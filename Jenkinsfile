@@ -4,7 +4,8 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'NodeJS-18'  // ✅ Only NodeJS is needed
+        nodejs 'NodeJS-18'
+        python 'Python3.9'  // ✅ Only NodeJS is needed
     }
 
     environment {
