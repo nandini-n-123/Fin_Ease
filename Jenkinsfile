@@ -3,12 +3,12 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs 'NodeJS-18'
-        python 'Python3.9'  // ✅ Only NodeJS is needed
-    }
+    
 
     environment {
+        NODEJS_HOME = tool name: 'NodeJS-18'
+        PYTHON_HOME = tool name: 'Python3.9'
+        PATH = "${env.NODEJS_HOME}/bin:${env.PYTHON_HOME}/bin:${env.PATH}"
         RENDER_API_KEY      = credentials('render-api-key')
         VERCEL_TOKEN        = credentials('vercel-token')
         VERCEL_ORG_ID       = credentials('vercel-org-id')
