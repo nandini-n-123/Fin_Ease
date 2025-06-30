@@ -26,7 +26,7 @@ FROM python:3.9-slim
 # Set the working directory inside the container
 WORKDIR /code
 
-# Copy the dependencies file to the working directory
+# Copy the dependencies file to the working directoryh
 COPY ./requirements.txt /code/requirements.txt
 
 # Install the packages specified in requirements.txt
