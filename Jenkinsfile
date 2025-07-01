@@ -72,7 +72,7 @@ pipeline {
             }
         }
 
-        stage('Build Backend Docker Image') {
+        /*stage('Build Backend Docker Image') {
         steps {
             echo "Building the backend Docker image..."
             dir('backend') {
@@ -80,21 +80,29 @@ pipeline {
                 sh "docker build -t fin-ease-backend:${env.BUILD_NUMBER} ."
             }
         }
-    }
+    }*/
 
     // --- STAGE 7: SCAN IMAGE WITH TRIVY (NEW) ---
-    stage('Scan Image with Trivy') {
-        steps {
-            echo "Scanning Docker image for OS and dependency vulnerabilities..."
-            // This runs the Trivy container to scan the image we just built
-            sh """
-                docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-                    -v trivy-cache:/root/.cache/ \
-                    aquasec/trivy:latest \
-                    image --exit-code 1 --severity HIGH,CRITICAL fin-ease-backend:${env.BUILD_NUMBER}
-            """
+    
+        // NEW STAGE FOR TRIVY FILESYSTEM SCAN
+        stage('Trivy Security Scan') {
+            steps {
+                script {
+                    echo "Scanning repository filesystem for vulnerabilities..."
+                    
+                    // The command to run the scan on the current directory
+                    // It will fail the build if high or critical vulnerabilities are found
+                    try {
+                        sh 'trivy fs --severity HIGH,CRITICAL --exit-code 1 .'
+                    } catch (e) {
+                        // This makes sure the pipeline stops on failure
+                        error "Trivy scan failed: ${e.message}"
+                    }
+                    
+                    echo "Trivy scan completed successfully. No high or critical vulnerabilities found."
+                }
+            }
         }
-    }
 
         stage('Build and Deploy') {
             parallel {
