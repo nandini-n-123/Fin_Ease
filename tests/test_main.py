@@ -11,7 +11,7 @@ async def client():
         yield ac
 
 # This is your test function
-@pytest.mark.anyo
+@pytest.mark.anyio
 async def test_root_health_check(client: AsyncClient):
     """Tests if the root endpoint '/' is working correctly."""
     response = await client.get("/")
