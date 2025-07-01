@@ -27,7 +27,7 @@ pipeline {
         }
 
         // vvvvvv PASTE THIS ENTIRE NEW STAGE HERE vvvvvv
-        stage('Dependency Security Scan') {
+        stage('Dependency Security Scan') {t
             steps {
                 // We go into the 'frontend' directory to find its package.json
                 dir('frontend') {
@@ -85,25 +85,21 @@ pipeline {
     // --- STAGE 7: SCAN IMAGE WITH TRIVY (NEW) ---
     
         // NEW STAGE FOR TRIVY FILESYSTEM SCAN
-        stage('Trivy Security Scan') {
+       // vvvvvv REPLACE the old Trivy stage with this new one vvvvvv
+        stage('Scan Filesystem with Trivy') {
             steps {
-                script {
-                    echo "Scanning repository filesystem for vulnerabilities..."
-                    
-                    // The command to run the scan on the current directory
-                    // It will fail the build if high or critical vulnerabilities are found
-                    try {
-                        sh 'trivy fs --severity HIGH,CRITICAL --exit-code 1 .'
-                    } catch (e) {
-                        // This makes sure the pipeline stops on failure
-                        error "Trivy scan failed: ${e.message}"
-                    }
-                    
-                    echo "Trivy scan completed successfully. No high or critical vulnerabilities found."
-                }
+                echo "Scanning project filesystem for vulnerabilities..."
+                // This command runs Trivy in 'filesystem' (fs) mode on the entire workspace.
+                // It will scan requirements.txt, package-lock.json, and other config files.
+                sh """
+                    docker run --rm -v ${env.WORKSPACE}:/scan-target \
+                        -v trivy-cache:/root/.cache/ \
+                        aquasec/trivy:latest \
+                        fs --exit-code 1 --severity HIGH,CRITICAL /scan-target
+                """
             }
         }
-
+        // ^^^^^^ END OF THE NEW STAGE ^^^^^^
         stage('Build and Deploy') {
             parallel {
                 stage('Deploy Backend to Render') {
