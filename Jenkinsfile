@@ -54,26 +54,28 @@ pipeline {
         // vvvvvv REPLACE your old 'Run Backend Tests' stage with this one vvvvvv
         // vvvvvv REPLACE your old 'Run Backend Tests' stage with this one vvvvvv
         stage('Run Backend Tests') {
-    steps {
-        dir('backend') {
-            echo "Setting up Python virtual environment and running tests..."
-            sh '''
-    # Step 1: Create a virtual environment named 'venv'
-    python3 -m venv venv
-    
-    # Step 2: Activate the virtual environment
-    . venv/bin/activate
-    
-    # Step 3: Install dependencies into the virtual environment
-    pip install -r requirements.txt
-    
-    # Step 4: Add the project root to the PYTHONPATH and run pytest
-    export PYTHONPATH=.
-    pytest tests
-'''
+            steps {
+                // We run all commands in a single shell to keep the virtual environment active
+                // and to set the PYTHONPATH correctly.
+                script {
+                    sh '''
+                        # Create and activate a Python virtual environment
+                        python3 -m venv venv
+                        . venv/bin/activate
+
+                        # Install dependencies into the virtual environment
+                        pip install -r backend/requirements.txt
+
+                        # Add the workspace root to PYTHONPATH so pytest can find the 'backend' module
+                        export PYTHONPATH=$WORKSPACE
+
+                        # Run pytest. It will automatically find the 'tests' directory.
+                        pytest
+                    '''
+                }
+            }
         }
-    }
-}
+
         // ^^^^^^ END OF THE CORRECTED STAGE ^^^^^^
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
         stage('SonarCloud Analysis') {
