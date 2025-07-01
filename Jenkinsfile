@@ -62,6 +62,8 @@ pipeline {
                     # Activate the virtual environment
                     . venv/bin/activate
                     
+                    pip install --upgrade -r requirements.txt
+
                     # Set the python path
                     export PYTHONPATH=$PWD
                     
