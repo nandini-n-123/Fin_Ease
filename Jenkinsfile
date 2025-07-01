@@ -36,7 +36,7 @@ pipeline {
             steps {
                 script {
                     def scannerHome = tool name: 'sonar-scanner'
-                    // This is the more direct command that avoids the hanging issue
+                    // This direct command is more reliable and prevents the pipeline from hanging.
                     sh """
                         ${scannerHome}/bin/sonar-scanner \
                         -Dsonar.projectKey=nandini-n-123_Fin_Ease \
@@ -49,10 +49,9 @@ pipeline {
             }
         }
 
-        // vvvvvv REPLACE your old 'Wait for SonarCloud Quality Gate' stage with this one vvvvvv
+        // vvvvvv THIS IS THE CORRECTED STAGE vvvvvv
         stage('Wait for SonarCloud Quality Gate') {
             steps {
-                // This timeout is still a good safety measure
                 timeout(time: 10, unit: 'MINUTES') {
                     // By wrapping only this step, it can find the analysis report
                     // left behind by the previous stage.
@@ -67,7 +66,6 @@ pipeline {
         stage('Scan Filesystem with Trivy') {
             steps {
                 echo "Scanning project filesystem for vulnerabilities..."
-                // This command runs Trivy in filesystem mode, avoiding the need to build a Docker image first
                 sh """
                     docker run --rm -v ${env.WORKSPACE}:/scan-target \
                         -v trivy-cache:/root/.cache/ \
@@ -92,7 +90,6 @@ pipeline {
                     }
                 }
                 
-                // This stage must be inside the parallel block
                 stage('Deploy Frontend to Vercel') {
                     steps {
                         echo "Triggering Vercel production deployment..."
