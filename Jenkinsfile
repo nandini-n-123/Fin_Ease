@@ -53,20 +53,7 @@ pipeline {
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
         // vvvvvv REPLACE your old 'Run Backend Tests' stage with this one vvvvvv
         // vvvvvv REPLACE your old 'Run Backend Tests' stage with this one vvvvvv
-        stage('run backend test') {
-    steps {
-        withCredentials([string(credentialsId: 'google-api-key', variable: 'GOOGLE_API_KEY')]) {
-            script {
-                echo '🧪 Running backend tests...'
-                sh '''
-                    # This will now run pytest but ignore any failures
-                    python3 -m pytest || true
-                '''
-            }
-        }
-    }
-}
-
+        
         // ^^^^^^ END OF THE CORRECTED STAGE ^^^^^^
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
         stage('SonarCloud Analysis') {
@@ -89,7 +76,13 @@ pipeline {
 }
 
 
-        
+        stage('Wait for SonarCloud Quality Gate') {
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
 
     // --- STAGE 7: SCAN IMAGE WITH TRIVY (NEW) ---
 
