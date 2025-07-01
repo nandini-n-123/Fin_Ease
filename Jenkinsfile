@@ -45,6 +45,7 @@ pipeline {
             steps {
                 dir('frontend') {
                     echo "Checking frontend code formatting with Prettier..."
+                    sh 'npm install'
                     sh 'npm run format-check'
                 }
             }
