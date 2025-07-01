@@ -59,17 +59,16 @@ pipeline {
             script {
                 echo '🧪 Running backend tests...'
                 sh '''
-                    # Activate the virtual environment
-                    . venv/bin/activate
-                    
-                    pip install --upgrade -r requirements.txt
+    . venv/bin/activate
+    pip install --upgrade -r requirements.txt
 
-                    # Set the python path
-                    export PYTHONPATH=$PWD
-                    
-                    # Run pytest as a module to ensure we use the one from the venv
-                    python3 -m pytest 
-                '''
+    # Add this line to check the installed version
+    echo "Checking httpx version..."
+    pip show httpx
+
+    export PYTHONPATH=$PWD
+    python3 -m pytest
+'''
             }
         }
     }
