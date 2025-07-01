@@ -1,7 +1,7 @@
 # backend/routers/chat.py
 
 from fastapi import APIRouter, HTTPException, status, Depends
-from models.models import ChatMessage
+from ..models.models import ChatMessage
 from typing import List
 import datetime
 

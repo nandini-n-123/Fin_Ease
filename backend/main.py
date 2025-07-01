@@ -6,12 +6,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 
-from routers import chat
+from .routers import chat
 import motor.motor_asyncio
 from dotenv import load_dotenv
-from rag_service import RAGService
+from .rag_service import RAGService
 
-load_dotenv()
+from pathlib import Path
+# ... other imports
+from dotenv import load_dotenv
+
+# This creates a path that points directly to your .env file
+env_path = Path('.') / 'backend' / '.env'
+load_dotenv(dotenv_path=env_path)
 
 app = FastAPI(
     title="FinEase Bilingual Web-RAG Backend",
