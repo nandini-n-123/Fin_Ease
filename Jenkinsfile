@@ -51,20 +51,31 @@ pipeline {
             }
         }
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
+        // vvvvvv REPLACE your old 'Run Backend Tests' stage with this one vvvvvv
         stage('Run Backend Tests') {
             steps {
-                // Change directory into the backend
                 dir('backend') {
-                    echo "Installing Python dependencies..."
-                    // Install all packages from your requirements file
-                    sh 'pip install -r requirements.txt'
-
-                    echo "Running Pytest..."
-                    // Run pytest. It will automatically find and run tests in the ../tests directory
-                    sh 'pytest ../tests'
+                    echo "Setting up Python virtual environment and running tests..."
+                    
+                    // The 'sh' block allows us to run multiple commands in the same shell session.
+                    // This is important for the virtual environment to stay active.
+                    sh '''
+                        # Step 1: Create a virtual environment named 'venv'
+                        python3 -m venv venv
+                        
+                        # Step 2: Activate the virtual environment
+                        source venv/bin/activate
+                        
+                        # Step 3: Install dependencies into the virtual environment
+                        pip install -r requirements.txt
+                        
+                        # Step 4: Run pytest using the activated environment
+                        pytest ../tests
+                    '''
                 }
             }
         }
+        // ^^^^^^ END OF THE NEW STAGE ^^^^^^
         stage('SonarCloud Analysis') {
     steps {
         script {
