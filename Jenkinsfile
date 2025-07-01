@@ -52,19 +52,19 @@ pipeline {
         }
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
         // vvvvvv REPLACE your old 'Run Backend Tests' stage with this one vvvvvv
+        // vvvvvv REPLACE your old 'Run Backend Tests' stage with this one vvvvvv
         stage('Run Backend Tests') {
             steps {
                 dir('backend') {
                     echo "Setting up Python virtual environment and running tests..."
                     
                     // The 'sh' block allows us to run multiple commands in the same shell session.
-                    // This is important for the virtual environment to stay active.
                     sh '''
                         # Step 1: Create a virtual environment named 'venv'
                         python3 -m venv venv
                         
-                        # Step 2: Activate the virtual environment
-                        source venv/bin/activate
+                        # Step 2: Activate the virtual environment using the universal '.' command
+                        . venv/bin/activate
                         
                         # Step 3: Install dependencies into the virtual environment
                         pip install -r requirements.txt
@@ -75,6 +75,7 @@ pipeline {
                 }
             }
         }
+        // ^^^^^^ END OF THE CORRECTED STAGE ^^^^^^
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
         stage('SonarCloud Analysis') {
     steps {
