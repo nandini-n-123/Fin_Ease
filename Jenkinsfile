@@ -58,12 +58,19 @@ pipeline {
         dir('backend') {
             echo "Setting up Python virtual environment and running tests..."
             sh '''
-                python3 -m venv venv
-                . venv/bin/activate
-                # Add a long timeout to pip install for large packages like torch
-                pip install --timeout=600 -r requirements.txt
-                pytest ../tests
-            '''
+    # Step 1: Create a virtual environment named 'venv'
+    python3 -m venv venv
+    
+    # Step 2: Activate the virtual environment
+    . venv/bin/activate
+    
+    # Step 3: Install dependencies into the virtual environment
+    pip install -r requirements.txt
+    
+    # Step 4: Add the project root to the PYTHONPATH and run pytest
+    export PYTHONPATH=.
+    pytest tests
+'''
         }
     }
 }
