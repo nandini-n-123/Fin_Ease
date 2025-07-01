@@ -41,16 +41,16 @@ pipeline {
             }
         }
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
-        
-        // ^^^^^^ END OF THE NEW STAGE ^^^^^^
-        stage('Lint Frontend Code') {
+        stage('Code Format Check') {
             steps {
                 dir('frontend') {
-                    echo "Running ESLint to check frontend code style..."
-                    sh 'npm run lint'
+                    echo "Checking frontend code formatting with Prettier..."
+                    sh 'npm run format-check'
                 }
             }
         }
+        // ^^^^^^ END OF THE NEW STAGE ^^^^^^
+        
         stage('SonarCloud Analysis') {
     steps {
         script {
