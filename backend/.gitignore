@@ -1,5 +1,6 @@
 # Ignore virtual environment folder
 finease/
+venv/
 
 # Bytecode and cache
 __pycache__/
