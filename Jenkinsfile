@@ -54,27 +54,19 @@ pipeline {
         // vvvvvv REPLACE your old 'Run Backend Tests' stage with this one vvvvvv
         // vvvvvv REPLACE your old 'Run Backend Tests' stage with this one vvvvvv
         stage('Run Backend Tests') {
-            steps {
-                dir('backend') {
-                    echo "Setting up Python virtual environment and running tests..."
-                    
-                    // The 'sh' block allows us to run multiple commands in the same shell session.
-                    sh '''
-                        # Step 1: Create a virtual environment named 'venv'
-                        python3 -m venv venv
-                        
-                        # Step 2: Activate the virtual environment using the universal '.' command
-                        . venv/bin/activate
-                        
-                        # Step 3: Install dependencies into the virtual environment
-                        pip install -r requirements.txt
-                        
-                        # Step 4: Run pytest using the activated environment
-                        pytest ../tests
-                    '''
-                }
-            }
+    steps {
+        dir('backend') {
+            echo "Setting up Python virtual environment and running tests..."
+            sh '''
+                python3 -m venv venv
+                . venv/bin/activate
+                # Add a long timeout to pip install for large packages like torch
+                pip install --timeout=600 -r requirements.txt
+                pytest ../tests
+            '''
         }
+    }
+}
         // ^^^^^^ END OF THE CORRECTED STAGE ^^^^^^
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
         stage('SonarCloud Analysis') {
