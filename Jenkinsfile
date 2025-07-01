@@ -49,13 +49,20 @@ pipeline {
             }
         }
 
+        // vvvvvv REPLACE your old 'Wait for SonarCloud Quality Gate' stage with this one vvvvvv
         stage('Wait for SonarCloud Quality Gate') {
             steps {
+                // This timeout is still a good safety measure
                 timeout(time: 10, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
+                    // By wrapping only this step, it can find the analysis report
+                    // left behind by the previous stage.
+                    withSonarQubeEnv('SonarCloud') {
+                        waitForQualityGate abortPipeline: true
+                    }
                 }
             }
         }
+        // ^^^^^^ END OF THE CORRECTED STAGE ^^^^^^
 
         stage('Scan Filesystem with Trivy') {
             steps {
