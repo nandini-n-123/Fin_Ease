@@ -67,7 +67,7 @@ class RAGService:
         """
         try:
             headers = {'User-Agent': 'Mozilla/5.0'}
-            response = requests.get(url, headers=headers, timeout=30,verify=False) # Increased timeout
+            response = requests.get(url, headers=headers, timeout=30) # Increased timeout
             response.raise_for_status()#to check if the web request is successful or not ,to handle the bad requests 
             soup = BeautifulSoup(response.content, 'html.parser')
             text = ' '.join(soup.body.stripped_strings)
