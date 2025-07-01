@@ -89,13 +89,7 @@ pipeline {
 }
 
 
-        stage('Wait for SonarCloud Quality Gate') {
-            steps {
-                timeout(time: 10, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: false
-                }
-            }
-        }
+        
 
     // --- STAGE 7: SCAN IMAGE WITH TRIVY (NEW) ---
 
