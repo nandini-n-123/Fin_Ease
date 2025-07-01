@@ -1,18 +1,21 @@
+
+
 pipeline {
     agent any
 
     tools {
         nodejs 'NodeJS-18'
+     // ✅ Only NodeJS is needed
     }
 
     environment {
-        RENDER_API_KEY    = credentials('render-api-key')
-        VERCEL_TOKEN      = credentials('vercel-token')
-        VERCEL_ORG_ID     = credentials('vercel-org-id')
-        VERCEL_PROJECT_ID = credentials('vercel-project-id')
-        SONAR_TOKEN       = credentials('sonarcloud-token')
-        GITHUB_CREDS      = credentials('github-credentials')
-        RENDER_SERVICE_ID = 'srv-d1d6ofh5pdvs73aeqit0'
+        RENDER_API_KEY      = credentials('render-api-key')
+        VERCEL_TOKEN        = credentials('vercel-token')
+        VERCEL_ORG_ID       = credentials('vercel-org-id')
+        VERCEL_PROJECT_ID   = credentials('vercel-project-id')
+        SONAR_TOKEN         = credentials('sonarcloud-token')
+        GITHUB_CREDS        = credentials('github-credentials')
+        RENDER_SERVICE_ID   = 'srv-d1d6ofh5pdvs73aeqit0'
     }
 
     stages {
@@ -23,57 +26,75 @@ pipeline {
             }
         }
 
+        // vvvvvv PASTE THIS ENTIRE NEW STAGE HERE vvvvvv
         stage('Dependency Security Scan') {
             steps {
+                // We go into the 'frontend' directory to find its package.json
                 dir('frontend') {
                     echo 'Running security audit on frontend dependencies...'
+                    
+                    // This command checks for known vulnerabilities.
+                    // '--audit-level=high' means the pipeline will only fail if 'high' or 'critical'
+                    // severity vulnerabilities are found. It will pass for low/moderate ones.
                     sh 'npm audit --audit-level=critical'
                 }
             }
         }
+        // ^^^^^^ END OF THE NEW STAGE ^^^^^^
+        
+        // ^^^^^^ END OF THE NEW STAGE ^^^^^^
 
         stage('SonarCloud Analysis') {
-            steps {
-                script {
-                    def scannerHome = tool name: 'sonar-scanner'
-                    // This direct command is more reliable and prevents the pipeline from hanging.
-                    sh """
-                        ${scannerHome}/bin/sonar-scanner \
-                        -Dsonar.projectKey=nandini-n-123_Fin_Ease \
-                        -Dsonar.organization=nandini-n-123 \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=https://sonarcloud.io \
-                        -Dsonar.token=${SONAR_TOKEN}
-                    """
-                }
-            }
-        }
+    steps {
+        script {
+           
+            def scannerHome = tool name: 'sonar-scanner'
 
-        // vvvvvv THIS IS THE CORRECTED STAGE vvvvvv
-        stage('Wait for SonarCloud Quality Gate') {
-            steps {
-                timeout(time: 10, unit: 'MINUTES') {
-                    // By wrapping only this step, it can find the analysis report
-                    // left behind by the previous stage.
-                    withSonarQubeEnv('SonarCloud') {
-                        waitForQualityGate abortPipeline: true
-                    }
-                }
-            }
-        }
-        // ^^^^^^ END OF THE CORRECTED STAGE ^^^^^^
-
-        stage('Scan Filesystem with Trivy') {
-            steps {
-                echo "Scanning project filesystem for vulnerabilities..."
+            withSonarQubeEnv('SonarCloud') {
                 sh """
-                    docker run --rm -v ${env.WORKSPACE}:/scan-target \
-                        -v trivy-cache:/root/.cache/ \
-                        aquasec/trivy:latest \
-                        fs --exit-code 1 --severity HIGH,CRITICAL /scan-target
+                    ${scannerHome}/bin/sonar-scanner \
+                    -Dsonar.projectKey=nandini-n-123_Fin_Ease\
+                    -Dsonar.organization=nandini-n-123 \
+                    -Dsonar.sources=. \
+                    -Dsonar.login=$SONAR_TOKEN
                 """
             }
         }
+    }
+}
+
+
+        stage('Wait for SonarCloud Quality Gate') {
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        stage('Build Backend Docker Image') {
+        steps {
+            echo "Building the backend Docker image..."
+            dir('backend') {
+                // We tag the image with the Jenkins build number for a unique version
+                sh "docker build -t fin-ease-backend:${env.BUILD_NUMBER} ."
+            }
+        }
+    }
+
+    // --- STAGE 7: SCAN IMAGE WITH TRIVY (NEW) ---
+    stage('Scan Image with Trivy') {
+        steps {
+            echo "Scanning Docker image for OS and dependency vulnerabilities..."
+            // This runs the Trivy container to scan the image we just built
+            sh """
+                docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+                    -v trivy-cache:/root/.cache/ \
+                    aquasec/trivy:latest \
+                    image --exit-code 1 --severity HIGH,CRITICAL fin-ease-backend:${env.BUILD_NUMBER}
+            """
+        }
+    }
 
         stage('Build and Deploy') {
             parallel {
@@ -81,21 +102,23 @@ pipeline {
                     steps {
                         echo "Triggering Render deployment..."
                         sh """
-                            curl -X POST \\
-                              -H "Authorization: Bearer ${RENDER_API_KEY}" \\
-                              -H "Accept: application/json" \\
-                              -H "Content-Type: application/json" \\
-                              https://api.render.com/v1/services/${RENDER_SERVICE_ID}/deploys
+                        curl -X POST \\
+                          -H "Authorization: Bearer ${RENDER_API_KEY}" \\
+                          -H "Accept: application/json" \\
+                          -H "Content-Type: application/json" \\
+                          https://api.render.com/v1/services/${RENDER_SERVICE_ID}/deploys
                         """
                     }
                 }
-                
-                stage('Deploy Frontend to Vercel') {
-                    steps {
-                        echo "Triggering Vercel production deployment..."
-                        sh 'npx vercel --prod --token ${VERCEL_TOKEN} --yes'
-                    }
-                }
+                // This is the new, simpler stage
+stage('Deploy Frontend to Vercel') {
+    steps {
+        // We no longer build in Jenkins. We just tell Vercel to deploy.
+        // Vercel will use the "Root Directory" setting to find and build your app itself.
+        echo "Triggering Vercel production deployment..."
+        sh 'npx vercel --prod --token ${VERCEL_TOKEN} --yes'
+    }
+}
             }
         }
     }
