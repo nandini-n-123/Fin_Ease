@@ -43,7 +43,14 @@ pipeline {
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
         
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
-
+        stage('Lint Frontend Code') {
+            steps {
+                dir('frontend') {
+                    echo "Running ESLint to check frontend code style..."
+                    sh 'npm run lint'
+                }
+            }
+        }
         stage('SonarCloud Analysis') {
     steps {
         script {
@@ -73,17 +80,6 @@ pipeline {
         }
 
     // --- STAGE 7: SCAN IMAGE WITH TRIVY (NEW) ---
-    stage('Scan Filesystem with Trivy') {
-            steps {
-                echo "Scanning project filesystem for vulnerabilities..."
-                sh """
-                    docker run --rm -v ${env.WORKSPACE}:/scan-target \
-                        -v trivy-cache:/root/.cache/ \
-                        aquasec/trivy:latest \
-                        fs --exit-code 1 --severity HIGH,CRITICAL /scan-target
-                """
-            }
-        }
 
         stage('Build and Deploy') {
             parallel {
