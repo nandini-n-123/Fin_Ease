@@ -53,28 +53,19 @@ pipeline {
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
         // vvvvvv REPLACE your old 'Run Backend Tests' stage with this one vvvvvv
         // vvvvvv REPLACE your old 'Run Backend Tests' stage with this one vvvvvv
-        stage('Run Backend Tests') {
-            steps {
-                // We run all commands in a single shell to keep the virtual environment active
-                // and to set the PYTHONPATH correctly.
-                script {
-                    sh '''
-                        # Create and activate a Python virtual environment
-                        python3 -m venv venv
-                        . venv/bin/activate
-
-                        # Install dependencies into the virtual environment
-                        pip install -r backend/requirements.txt
-
-                        # Add the workspace root to PYTHONPATH so pytest can find the 'backend' module
-                        export PYTHONPATH=$WORKSPACE
-
-                        # Run pytest. It will automatically find the 'tests' directory.
-                        pytest
-                    '''
-                }
+        stage('run backend test') { // Your specific stage name
+    steps {
+        // Add the withCredentials wrapper here
+        withCredentials([string(credentialsId: 'google-api-key', variable: 'GOOGLE_API_KEY')]) {
+            script {
+                echo '🧪 Running backend tests...'
+                // Your commands that need the key go inside
+                sh 'export PYTHONPATH=$PWD'
+                sh 'pytest' 
             }
         }
+    }
+}
 
         // ^^^^^^ END OF THE CORRECTED STAGE ^^^^^^
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
