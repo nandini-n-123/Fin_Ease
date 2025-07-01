@@ -72,16 +72,6 @@ pipeline {
             }
         }
 
-        stage('Build Backend Docker Image') {
-        steps {
-            echo "Building the backend Docker image..."
-            dir('backend') {
-                // We tag the image with the Jenkins build number for a unique version
-                sh "docker build -t fin-ease-backend:${env.BUILD_NUMBER} ."
-            }
-        }
-    }
-
     // --- STAGE 7: SCAN IMAGE WITH TRIVY (NEW) ---
     stage('Scan Filesystem with Trivy') {
             steps {
