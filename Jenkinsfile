@@ -53,15 +53,21 @@ pipeline {
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
         // vvvvvv REPLACE your old 'Run Backend Tests' stage with this one vvvvvv
         // vvvvvv REPLACE your old 'Run Backend Tests' stage with this one vvvvvv
-        stage('run backend test') { // Your specific stage name
+        stage('run backend test') {
     steps {
-        // Add the withCredentials wrapper here
         withCredentials([string(credentialsId: 'google-api-key', variable: 'GOOGLE_API_KEY')]) {
             script {
                 echo '🧪 Running backend tests...'
-                // Your commands that need the key go inside
-                sh 'export PYTHONPATH=$PWD'
-                sh 'pytest' 
+                sh '''
+                    # Activate the virtual environment
+                    . venv/bin/activate
+                    
+                    # Set the python path
+                    export PYTHONPATH=$PWD
+                    
+                    # Run pytest as a module to ensure we use the one from the venv
+                    python3 -m pytest 
+                '''
             }
         }
     }
