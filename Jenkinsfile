@@ -51,7 +51,20 @@ pipeline {
             }
         }
         // ^^^^^^ END OF THE NEW STAGE ^^^^^^
-        
+        stage('Run Backend Tests') {
+            steps {
+                // Change directory into the backend
+                dir('backend') {
+                    echo "Installing Python dependencies..."
+                    // Install all packages from your requirements file
+                    sh 'pip install -r requirements.txt'
+
+                    echo "Running Pytest..."
+                    // Run pytest. It will automatically find and run tests in the ../tests directory
+                    sh 'pytest ../tests'
+                }
+            }
+        }
         stage('SonarCloud Analysis') {
     steps {
         script {
