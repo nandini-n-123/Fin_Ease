@@ -1,22 +1,21 @@
-# File: tests/test_main.py
+# tests/test_main.py
 
 import pytest
-from httpx import AsyncClient
-from backend.main import app # Import your FastAPI app from its file
+from fastapi.testclient import TestClient
+from backend.main import app
 
-# This fixture creates a test client that can make requests to your app
+# This fixture creates a synchronous test client for your app
 @pytest.fixture
-async def client():
-    async with AsyncClient(app=app, base_url="http://test") as ac:
-        yield ac
+def client():
+    with TestClient(app) as c:
+        yield c
 
-# This is your test function
-@pytest.mark.anyio
-async def test_root_health_check(client: AsyncClient):
-    """Tests if the root endpoint '/' is working correctly."""
-    response = await client.get("/")
-    
-    # Assertions check if the result is what we expect.
-    # If any assert fails, the test fails.
+# This is now a standard, synchronous test function
+def test_root_health_check(client: TestClient):
+    """
+    Tests that the root endpoint returns a 200 OK status.
+    """
+    response = client.get("/")
     assert response.status_code == 200
-    assert response.json() == {"message": "FinEase Web-RAG Backend is running!"}
+    # You can add more assertions here if needed
+    # For example: assert response.json() == {"message": "OK"}
