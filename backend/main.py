@@ -28,7 +28,8 @@ app = FastAPI(
 
 origins = [
     "https://fin-ease.vercel.app",  # Your main Production URL
-    "https://fin-ease-qf8iccyk1-nandini-ns-projects.vercel.app", # Your LATEST Preview URL
+    "https://fin-ease-qf8iccyk1-nandini-ns-projects.vercel.app",
+    'https://fin-ease-six.vercel.app/', # Your LATEST Preview URL
     "http://localhost:3000",          # For local development
 ]
 
